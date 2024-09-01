@@ -1,7 +1,9 @@
 const Event = require("../models/Event");
+const { convertPlaintextToJSON } = require("../utils/textToJson");
 
 exports.postEvents = async (req, res) => {
-  const events = req.body;
+  const eventsText = req.body;
+  const events = convertPlaintextToJSON(eventsText);
 
   try {
     if (!Array.isArray(events) || events.length === 0) {
@@ -9,13 +11,44 @@ exports.postEvents = async (req, res) => {
         message: "Invalid input: events should be a non-empty array.",
       });
     }
-    const result = await Event.insertMany(events);
 
+    for (const event of events) {
+      if (
+        !event.Name ||
+        typeof event.Name !== "string" ||
+        event.Name.trim() === ""
+      ) {
+        return res.status(400).json({
+          message: `Event name "${event.Name}" is invalid.`,
+        });
+      }
+
+      for (const param of event.Parameters) {
+        if (
+          !param.name ||
+          typeof param.name !== "string" ||
+          param.name.trim() === ""
+        ) {
+          return res.status(400).json({
+            message: `Parameter name "${param.name}" is invalid.`,
+          });
+        }
+      }
+
+      const existingEvent = await Event.findOne({ Name: event.Name });
+      if (existingEvent) {
+        return res.status(400).json({
+          message: `Event name "${event.Name}" already exists.`,
+        });
+      }
+    }
+
+    const result = await Event.insertMany(events);
     res
       .status(201)
       .json({ message: "Events created successfully", data: result });
   } catch (err) {
-    console.error("Error creating events:", err.message);
+    console.error("Error creating events:", err);
 
     if (err.code === 11000) {
       res
@@ -38,14 +71,14 @@ exports.getParameters = async (req, res) => {
   const { paramName } = req.query;
 
   try {
-    const event = await Event.findOne({ name: eventName });
+    const event = await Event.findOne({ Name: eventName });
 
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
 
     if (paramName) {
-      const parameter = event.parameters.find(
+      const parameter = event.Parameters.find(
         (param) => param.name === paramName
       );
       if (parameter) {
@@ -55,7 +88,7 @@ exports.getParameters = async (req, res) => {
       }
     }
 
-    return res.json(event.parameters);
+    return res.json(event.Parameters);
   } catch (err) {
     console.error(err.message);
     return res.status(500).json({ message: "Server error" });

@@ -1,26 +1,14 @@
 const mongoose = require("mongoose");
 
 // Define valid types
-const Types = [
-  "int",
-  "float",
-  "double",
-  "char",
-  "bool",
-  "long",
-  "short",
-  "unsigned int",
-  "unsigned long",
-  "string",
-];
+const Types = ["Int", "Float", "Double", "String", "Boolean", "Long", "Short"];
 
 const eventSchema = new mongoose.Schema({
-  name: {
+  Name: {
     type: String,
     required: true,
-    unique: true,
   },
-  parameters: [
+  Parameters: [
     {
       name: {
         type: String,

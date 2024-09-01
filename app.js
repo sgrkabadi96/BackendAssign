@@ -8,7 +8,7 @@ connectDB();
 
 app.use(morgan("dev"));
 
-app.use(express.json());
+app.use(express.text({ type: "text/plain" }));
 
 app.use("/api", eventRoutes);
 app.use((req, res, next) => {
