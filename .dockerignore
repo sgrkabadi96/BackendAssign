@@ -1,0 +1,19 @@
+# Exclude node_modules directory
+node_modules
+
+# Exclude Git repository files
+.git
+.gitignore
+
+# Exclude Dockerfile and docker-compose files
+Dockerfile
+
+# Exclude environment variable files
+.env
+
+# Exclude OS-generated files
+.DS_Store
+Thumbs.db
+
+
+
