@@ -125,5 +125,15 @@ The server will run at `http://localhost:5000`.
 - **400 Bad Request**: For invalid data or duplicate events.
 - **500 Internal Server Error**: For unexpected server issues.
 
+## Using Docker Compose:
+
+Make sure you have Docker installed. Then, use the following command to build and start the application:
+
+```
+docker compose up
+```
+
+This will start the application and MongoDB in Docker containers as specified in the docker-compose.yml file.
+
 
 
